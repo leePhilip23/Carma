@@ -1,3 +1,4 @@
 # Hack_A_Thong
 
-Work on user interface for this week.
+Week of 10/24 - Front-End Design + Data Collection
+
