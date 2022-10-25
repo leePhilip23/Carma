@@ -1,0 +1,33 @@
+body{
+    background: url("supraPic.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+  }
+  
+  .header{
+    width: 100%;
+    background-color: black;
+  }
+  
+  .header ul{
+    text-align: center;
+  }
+  
+  .header ul li{
+    list-style: none;
+    display: inline-block;
+  
+  }
+  
+  .header ul li a{
+    display: block;
+    text-decoration: none;
+    text-transform: uppercase;
+    color:white;
+    font-size: 20px;
+    font-family: 'Raleway',sans-serif;
+    letter-spacing: 2px;
+    font-weight: 600;
+    padding:25px;
+  }
