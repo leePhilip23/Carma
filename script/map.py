@@ -55,5 +55,5 @@ class map:
 """
 Testing
 """
-maps = map()
-print(json.dumps(maps.addressToWGS84("Toyota North America"), indent=2, sort_keys=True))
+# maps = map()
+# print(json.dumps(maps.addressToWGS84("Toyota North America"), indent=2, sort_keys=True))
