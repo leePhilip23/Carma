@@ -6,27 +6,8 @@ from here_location_services import LS
 from here_location_services.config.routing_config import ROUTING_RETURN
 from here_map_widget import Map, Marker, GeoJSON
 from here_location_services.config.isoline_routing_config import RANGE_TYPE, ISOLINE_ROUTING_TRANSPORT_MODE
+from util import *
 
-
-def read_api_key():
-    """
-    reads and parse and store the credential information from local sources
-    :return:
-    credd : dict
-        a dictionary storing different keys and api keys
-    """
-    here_path = os.path.join(os.getcwd(), "..")
-    here_path = os.path.join(here_path, "credentials")
-    cred_path = os.path.join(here_path, "credentials.properties")
-    # print(cred_path)
-    cred = {}
-    with open(cred_path, "r") as f:
-        for temp in f:
-            temp = (temp.strip()).split("=")
-            # print(temp)
-            cred[temp[0].strip()] = temp[1].strip()
-
-    return cred
 
 
 class MapAPI:
@@ -76,8 +57,8 @@ class MapAPI:
         :return:
         """
         self.route_map = Map(api_key=self.LS_API_KEY, center=center, zoom=zoom)
-    def adjust_map(self):
-        self.route_map.
+    # def adjust_map(self):
+    #     self.route_map.
     def calculate_route(self, start=None, destination=None, mode="car", departure_time=datetime.now(), avoidance=None):
 
         if destination is None:
