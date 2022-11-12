@@ -9,23 +9,28 @@ import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import XML, fromstring, tostring
 from util import *
 
-creds = read_api_key()
+class DataAPI():
+    def __init__(self):
+        self.creds = read_api_key()
+        self.LS_API_KEY = self.creds["here.api_key"]
+        self.GMAP_API_KEY = self.creds["gmap.api_key"]
 
-LS_API_KEY = creds["here.api_key"]
-auth = HTTPBasicAuth('apiKey', LS_API_KEY)
-flow_url = f"https://data.traffic.hereapi.com/v7/flow"
+    def getFlow(self,start, end):
 
+        auth = HTTPBasicAuth('apiKey', self.LS_API_KEY)
+        flow_url = f"https://data.traffic.hereapi.com/v7/flow"
+        if end == None:
+            destination = [33.0811809, -96.841015]
+        if start == None:
+            start = [32.9857, -96.7502]
+        page = requests.get(f'https://data.traffic.hereapi.com/v7/flow?apiKey={self.LS_API_KEY}'
+                            f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'
+                            f'{max(start[1],destination[1])},{max(start[0],destination[0])}&locationReferencing=shape')
 
-destination = [33.0811809, -96.841015]
-start = [32.9857, -96.7502]
-page = requests.get(f'https://data.traffic.hereapi.com/v7/flow?apiKey={LS_API_KEY}'
-                    f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'
-                    f'{max(start[1],destination[1])},{max(start[0],destination[0])}&locationReferencing=shape')
-
-# print(f'https://data.traffic.hereapi.com/v7/flow?apiKey={LS_API_KEY}'
-#                     f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'
-#                     f'{max(start[1],destination[1])},{max(start[0],destination[0])}&locationReferencing=olr')
-print(page.json())
+        # print(f'https://data.traffic.hereapi.com/v7/flow?apiKey={LS_API_KEY}'
+        #                     f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'
+        #                     f'{max(start[1],destination[1])},{max(start[0],destination[0])}&locationReferencing=olr')
+        return(page.json()["results"])
 # file_name = "temp_traffic.json"
 # with open(file_name, 'w') as file_object:  #open the file in write mode
 #  json.dump(page.json(), file_object)
