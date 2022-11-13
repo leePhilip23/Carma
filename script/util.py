@@ -50,5 +50,5 @@ def wsg84_distance(location1, location2):
     r = 6371
 
     # calculate the result
-    return (c * r) / 1000
+    return (c * r) / 1.6
 
