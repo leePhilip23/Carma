@@ -20,6 +20,20 @@ class toConnect():
         self.origin = [32.9857, -96.7502]  # toyota NA HQ
         self.dest = [33.0811809, -96.841015]  # UTD
         self.val = None
+        self.heatMap = {}
+    def set_origin_end(self, begin, end):
+
+        results = MapAPI().address_to_wgs84(begin)
+        lat = results['geometry']['location']['lat']
+        lng = results['geometry']['location']['lng']
+        self.origin = [lat,lng]
+
+        results = MapAPI().address_to_wgs84(end)
+        lat = results['geometry']['location']['lat']
+        lng = results['geometry']['location']['lng']
+        self.dest = [lat, lng]
+
+
 
     def create_csv_from_flow(self):
         # driver ranking: 1 worst, 4 best
@@ -103,6 +117,8 @@ class toConnect():
             end = self.coors[index][1]
             flow_coeff = (self.flow_dict[tuple(start)] + self.flow_dict[tuple(end)]) / 2
             score *= (1 / flow_coeff)
+            mid_point = [(start[0]+end[0])/2,(start[1]+end[1])/2]
+            self.heatMap[tuple(mid_point)] = score
             print(score)
             if score >= driver_ranking:
                 temp_bbox = AvoidBoundingBox(max(start[0], end[0]), min(start[0], end[0]), max(start[1], end[1]),
@@ -114,10 +130,11 @@ class toConnect():
     def get_route(self):
         from datetime import datetime
         route = MapAPI().run( start = self.origin, end = self.dest, mode = "car", departure_time = datetime.now(),  avoidance= self.avoidance)
-        return route, self.avoidance
+        return route, self.avoidance, self.heatMap
 
 # to = toConnect()
+# to.set_origin_end({"UTD"}, {"Toyota North America"})
 # to.create_csv_from_flow()
 # to.inference_data()
-# to.determine_avoid_bbox(2)
+# to.determine_avoid_bbox({USER_DRIVING_SCORE})
 # route, box = to.get_route()
