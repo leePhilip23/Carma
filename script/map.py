@@ -147,7 +147,7 @@ class MapAPI:
         self.route_map.add_layer(geo_layer)
         self.route_map.add_object(origin_marker)
         self.route_map.add_object(dest_marker)
-        return self.route_map
+        return center, route, self.zoom
 """
 Testing
 """
