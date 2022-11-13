@@ -14,6 +14,7 @@ class DataAPI():
         self.creds = read_api_key()
         self.LS_API_KEY = self.creds["here.api_key"]
         self.GMAP_API_KEY = self.creds["gmap.api_key"]
+        self.WEATHER_API_KEY = self.creds["weather.api_key"]
 
     def getFlow(self,start, end):
 
@@ -31,6 +32,16 @@ class DataAPI():
         #                     f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'
         #                     f'{max(start[1],destination[1])},{max(start[0],destination[0])}&locationReferencing=olr')
         return(page.json()["results"])
+
+    def getWeatherAt(self, location):
+        # print(self.WEATHER_API_KEY)
+        page = requests.get(f"https://api.openweathermap.org/data/2.5/onecall?lat={location[0]}"
+                            f"&lon={location[1]}&exclude=minutely,hourly,daily,alerts&appid={self.WEATHER_API_KEY}")
+        print(page.json())
+        return page.json()
 # file_name = "temp_traffic.json"
 # with open(file_name, 'w') as file_object:  #open the file in write mode
 #  json.dump(page.json(), file_object)
+# d = DataAPI()
+# print(d.getWeatherAt([32,96])["current"]["weather"])
+
