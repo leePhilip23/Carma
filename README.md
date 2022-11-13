@@ -1,4 +1,4 @@
-# Hack_A_Thong
+# Hackathon
 
 ## Week of 10/24
 - Front-End Design + Data Collection
