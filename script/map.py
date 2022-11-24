@@ -49,7 +49,7 @@ class MapAPI:
             # lng = results['geometry']['location']['lng']
         except:
             pass
-        print(results)
+        # print(results)
         return results
 
     # def adjust_map(self):

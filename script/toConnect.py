@@ -49,13 +49,13 @@ class toConnect():
         Saturday = day_name == "Saturday"
         Sunday = day_name == "Sunday"
 
-        data = DataAPI().getFlow(None, None)
+        data = DataAPI().getFlow(self.origin, self.dest)
         abs_distance = wsg84_distance(self.origin, self.dest)
         weather = DataAPI().getWeatherAt([data[0]["location"]["shape"]["links"][0]["points"][0]["lat"],
                                           data[0]["location"]["shape"]["links"][0]["points"][0]["lng"]])
         for result in data:
             location = result["location"]
-            if "description"  in location:
+            if "description" in location:
                 name = location["description"]
             else:
                 name = "Rd"
@@ -68,31 +68,35 @@ class toConnect():
             Pike = "PKE" in name or "pke" in name or "Booth" in name
             Fwy = "Wy" in name or "wy" in name or "pky" in name or "Pky" in name or "TOLLWAY" in name or "Way" in name
             flow = result["currentFlow"]
-            su = flow["speedUncapped"]
-            ff = flow["freeFlow"]
-            flow_coeff = su / ff
-            # print(name,Rd,St,Dr,Ave,Route,Pike,Fwy)
-            rain = False
-            humidity = 0
-            if "Rain" in weather["current"]["weather"]:
-                rain = True
-            humidity = float(weather["current"]["humidity"] )
-            for i in location["shape"]["links"]:
-                paths = i
-                start = [paths["points"][0]["lat"], paths["points"][0]["lng"]]
-                end = [paths["points"][-1]["lat"], paths["points"][-1]["lng"]]
-                if tuple(start) not in self.flow_dict or tuple(end) not in self.flow_dict:
-                    self.flow_dict[tuple(start)] = flow_coeff
-                    self.flow_dict[tuple(end)] = flow_coeff
-                distance = paths["length"] * 0.000621371
-                duration = distance / ff * su * 100
-                self.df.loc[len(self.df.index)] = [int(Tuesday), int(Wednesday), int(Thursday), int(Friday),
-                                                   int(Saturday), int(Sunday),
-                                                   duration, int(rain), int(Rd), int(St), int(Dr), int(Ave),
-                                                   int(Route), int(Pike), int(Fwy),
-                                                   start[0], start[1], end[0], end[1], distance, humidity]
-                self.coors.append([start, end])
-                self.df = self.df.fillna(0)
+            # print(flow)
+
+            if "speedUncapped" in flow:
+                su = flow["speedUncapped"]
+                ff = flow["freeFlow"]
+
+                flow_coeff = su / ff
+                # print(name,Rd,St,Dr,Ave,Route,Pike,Fwy)
+                rain = False
+                humidity = 0
+                if "Rain" in weather["current"]["weather"]:
+                    rain = True
+                humidity = float(weather["current"]["humidity"] )
+                for i in location["shape"]["links"]:
+                    paths = i
+                    start = [paths["points"][0]["lat"], paths["points"][0]["lng"]]
+                    end = [paths["points"][-1]["lat"], paths["points"][-1]["lng"]]
+                    if tuple(start) not in self.flow_dict or tuple(end) not in self.flow_dict:
+                        self.flow_dict[tuple(start)] = flow_coeff
+                        self.flow_dict[tuple(end)] = flow_coeff
+                    distance = paths["length"] * 0.000621371
+                    duration = distance / ff * su * 100
+                    self.df.loc[len(self.df.index)] = [int(Tuesday), int(Wednesday), int(Thursday), int(Friday),
+                                                       int(Saturday), int(Sunday),
+                                                       duration, int(rain), int(Rd), int(St), int(Dr), int(Ave),
+                                                       int(Route), int(Pike), int(Fwy),
+                                                       start[0], start[1], end[0], end[1], distance, humidity]
+                    self.coors.append([start, end])
+                    self.df = self.df.fillna(0)
 
                     # print(len(self.df.index))
         if os.path.exists("street_data.csv"):
@@ -119,12 +123,14 @@ class toConnect():
             score *= 0.75
             mid_point = [(start[0]+end[0])/2,(start[1]+end[1])/2]
             self.heatMap[tuple(mid_point)] = score
-            print(score, driver_ranking)
+            score *= 25
+            # print(score, driver_ranking)
+            print(score ,driver_ranking)
             if score >= driver_ranking :
                 temp_bbox = AvoidBoundingBox(max(start[0], end[0]), min(start[0], end[0]), max(start[1], end[1]),
                                              min(start[1], end[1]))
                 self.avoidance.append(temp_bbox)
-            print(start, end, score)
+            # print(start, end, score)
         return self.avoidance
 
     def get_route(self):

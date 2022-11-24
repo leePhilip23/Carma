@@ -1,5 +1,6 @@
 import smtplib
 from score import Score
+import os
 
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -178,47 +179,65 @@ def map():
 
     if username is not None and password is not None and email is not None and \
             two_step_code is not None and score_calc is not None:
-
         if request.method == 'POST':
             starting_point = str(request.form.get("start"))
             destination = str(request.form.get("finish"))
             score = score_calc.total_score
-            map,route,zoom, bbox, heat_map = get_route_map(starting_point,destination, score)
+            map, route, zoom, bbox, heat_map = get_route_map(starting_point, destination, score)
 
             coords = route["features"][0]["geometry"]["coordinates"]
             markers = []
             for coor in coords:
-                markers.append([coor[1],coor[0]])
-            print(markers)
+                markers.append([coor[1], coor[0]])
+            # print(markers)
             import folium
-            from branca.element import  Figure
+            # import folium to create the map
+            from branca.element import Figure
             fig = Figure(width=1024, height=2056)
-            m1 = folium.Map(width=1024, height=2056, location=map, zoom_start=int(zoom-1), min_zoom=2,
-                            max_zoom=14)
+            # defined the map
+            m1 = folium.Map(width=1024, height=2056, location=map, zoom_start=int(zoom - 1), min_zoom=1,
+                            max_zoom=20)
             fig.add_child(m1)
+            # add the map to figure
             f1 = folium.FeatureGroup("Path 1")
-            line_1 = folium.vector_layers.PolyLine(markers, popup='<b>path</b>', tooltip='path',color='blue', weight=10).add_to(f1)
+            line_1 = folium.vector_layers.PolyLine(markers, popup='<b>path</b>', tooltip='path', color='blue',
+                                                   weight=10).add_to(f1)
             f1.add_to(m1)
+            # folium.LayerControl().add_to(m1)
+            # add the path
+
+            from folium import plugins
+            from folium.plugins import HeatMap
+            # creating heatmap data
+            heat_data = []
+            for location in heat_map.keys():
+                heat_data.append([location[0],location[1], heat_map[location]])
+
+            HeatMap(heat_data).add_to(folium.FeatureGroup(name='Heat Map').add_to(m1))
+
+
+            # add bounding boxed
+            for box in bbox:
+                folium.Rectangle([(box.north,box.west),(box.south,box.east)]).add_to(m1)
+
             folium.LayerControl().add_to(m1)
 
-            for i in range(0, len(markers)):
-                folium.Marker(
-                    location=markers[1],
-                    popup=str(i),
-                ).add_to(m1)
-
-            import os
-            if os.path.exists("out.html"):
-                os.remove("out.html")
-
-            import  webbrowser
-            m1.save("out.html")
 
 
-            return webbrowser.open("out.html")
+
+
+
+            out_path = os.path.join("templates","out.html")
+            if os.path.exists(out_path):
+                os.remove(out_path)
+
+            import webbrowser
+            m1.save(out_path)
+
+            return render_template("out.html")
 
         else:
-            return render_template("display_map.html", invalid=False)
+            return render_template( "out.html", invalid=False)
 
     # If invalid fields, reload to main
     else:
@@ -475,8 +494,8 @@ def get_route_map(start, end, score):
     to.create_csv_from_flow()
     to.inference_data()
     to.determine_avoid_bbox(score)
-    map,route,zoom, box, heat_map = to.get_route()
-    return map,route,zoom, box, heat_map
+    map, route, zoom, box, heat_map = to.get_route()
+    return map, route, zoom, box, heat_map
 
 
 def reset():
