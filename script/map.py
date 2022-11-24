@@ -108,7 +108,7 @@ class MapAPI:
                     ROUTING_RETURN.instructions,
                     ROUTING_RETURN.actions,
                 ],
-                avoid_areas=[]
+                avoid_areas=avoidance
             )
             geo_json = result.to_geojson()
             return geo_json
@@ -134,7 +134,7 @@ class MapAPI:
             else:
                 self.setDest(end)
 
-        route = self.calculate_route(mode=mode, departure_time= departure_time)
+        route = self.calculate_route(mode=mode, departure_time= departure_time, avoidance= avoidance)
 
         geo_layer = GeoJSON(data=route, style={"lineWidth": 5})
 

@@ -184,12 +184,7 @@ def map():
             destination = str(request.form.get("finish"))
             score = score_calc.total_score
             map, route, zoom, bbox, heat_map = get_route_map(starting_point, destination, score)
-
-            coords = route["features"][0]["geometry"]["coordinates"]
-            markers = []
-            for coor in coords:
-                markers.append([coor[1], coor[0]])
-            # print(markers)
+            # print(route)
             import folium
             # import folium to create the map
             from branca.element import Figure
@@ -198,11 +193,19 @@ def map():
             m1 = folium.Map(width=1024, height=2056, location=map, zoom_start=int(zoom - 1), min_zoom=1,
                             max_zoom=20)
             fig.add_child(m1)
-            # add the map to figure
-            f1 = folium.FeatureGroup("Path 1")
-            line_1 = folium.vector_layers.PolyLine(markers, popup='<b>path</b>', tooltip='path', color='blue',
-                                                   weight=10).add_to(f1)
-            f1.add_to(m1)
+            color = [ 'blue',  'purple', 'orange', 'darkred', 'lightred', 'beige', 'darkblue', 'darkgreen', 'cadetblue', 'darkpurple', 'white', 'pink', 'lightblue', 'lightgreen', 'gray', 'black', 'lightgray']
+            for i in range(0, len(route["features"])):
+                coords = route["features"][i]["geometry"]["coordinates"]
+                markers = []
+                for coor in coords:
+                    markers.append([coor[1], coor[0]])
+                # print(markers)
+
+                # add the map to figure
+                f1 = folium.FeatureGroup(f"Path{i}")
+                line_1 = folium.vector_layers.PolyLine(markers, popup=f'<b>path{i}</b>', tooltip=f'path{i}', color=color[i],
+                                                       weight=7).add_to(f1)
+                f1.add_to(m1)
             # folium.LayerControl().add_to(m1)
             # add the path
 

@@ -115,6 +115,7 @@ class toConnect():
 
         # some functions = determind the risk
         # score = func()
+        from operator import itemgetter
         for index, score in enumerate(self.val):
             start = self.coors[index][0]
             end = self.coors[index][1]
@@ -124,14 +125,37 @@ class toConnect():
             mid_point = [(start[0]+end[0])/2,(start[1]+end[1])/2]
             self.heatMap[tuple(mid_point)] = score
             score *= 25
+
             # print(score, driver_ranking)
-            print(score ,driver_ranking)
-            if score >= driver_ranking :
-                temp_bbox = AvoidBoundingBox(max(start[0], end[0]), min(start[0], end[0]), max(start[1], end[1]),
-                                             min(start[1], end[1]))
-                self.avoidance.append(temp_bbox)
+            # print(distance, abs_distance)
+            abs_distance = wsg84_distance(self.origin, self.dest)
+            local_distance = wsg84_distance(self.origin, mid_point) + wsg84_distance(self.dest, mid_point)
+            if local_distance < abs_distance * 1.2:
+                if score >= driver_ranking :
+                    temp_bbox = AvoidBoundingBox(max(start[0], end[0]), min(start[0], end[0]), max(start[1], end[1]),
+                                                 min(start[1], end[1]))
+                    self.avoidance.append( (temp_bbox,score))
+                    # print(len(self.avoidance))
+        if len(self.avoidance) >= 80:
+            self.avoidance = sorted(self.avoidance, key=itemgetter(1), reverse=True)
+            temp = []
+            spacing = int(len(self.avoidance)/80)
+            print(spacing)
+            for i in range(0, len(self.avoidance), spacing):
+                temp.append(self.avoidance[i][0])
+                if len(temp) >= 80:
+                    break
+            self.avoidance = temp
             # print(start, end, score)
+        else:
+            temp = []
+            for i in range(0, len(self.avoidance)):
+                temp.append(self.avoidance[i][0])
+
+            self.avoidance = temp
+        print(len(self.avoidance))
         return self.avoidance
+
 
     def get_route(self):
         from datetime import datetime

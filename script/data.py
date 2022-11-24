@@ -29,8 +29,8 @@ class DataAPI():
         else:
             start = origin
         page = requests.get(f'https://data.traffic.hereapi.com/v7/flow?apiKey={self.LS_API_KEY}'
-                            f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'
-                            f'{max(start[1],destination[1])},{max(start[0],destination[0])}&locationReferencing=shape')
+                            f'&in=bbox:{min(start[1],destination[1]) - 0.01},{min(start[0],destination[0])- 0.01},'
+                            f'{max(start[1],destination[1]) + 0.01},{max(start[0],destination[0]) + 0.01}&locationReferencing=shape')
 
         # print(f'https://data.traffic.hereapi.com/v7/flow?apiKey={LS_API_KEY}'
         #                     f'&in=bbox:{min(start[1],destination[1])},{min(start[0],destination[0])},'

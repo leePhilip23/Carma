@@ -25,7 +25,7 @@ class Score:
 
     def calc_age(self):
         self.age_points = (1 - 4.11 * (self.age-10) ** -0.994) * 25
-        print(f"age_points: {self.age_points}")
+        # print(f"age_points: {self.age_points}")
         self.total_score += self.age_points
 
     def calc_gender(self):
@@ -34,7 +34,7 @@ class Score:
 
     def calc_yr_driven(self):
         self.yr_driven_points = (100 -(-0.0000258714655037193 * (self.yr_driven ** 3) + 0.00416691853684393 * (self.yr_driven ** 2) -0.221260904317065  * self.yr_driven + 4.81515176622346)*10)/4
-        print(f"yr_driven: {self.yr_driven_points}")
+        # print(f"yr_driven: {self.yr_driven_points}")
         self.total_score += self.yr_driven_points
 
 
@@ -51,5 +51,5 @@ class Score:
             self.year_of_car_points = 25 - 3 * (1 / (1.4 - math.log10(self.year_of_car)))
             if self.year_of_car_points < 0:
                 self.year_of_car_points = 0
-        print(f"year of car points: {self.yr_driven_points}")
+        # print(f"year of car points: {self.yr_driven_points}")
         self.total_score += self.year_of_car_points
