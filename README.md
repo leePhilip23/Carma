@@ -1,2 +1,2 @@
 # Hackathon
-Link to DevPost [here](https://devpost.com/software/carma-cbfj80)
+This is a continuation of the hackathon project we did in Fall 2022
